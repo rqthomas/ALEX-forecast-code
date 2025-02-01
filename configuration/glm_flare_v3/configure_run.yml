@@ -1,0 +1,9 @@
+restart_file: .na
+start_datetime: 2024-12-28 00:00:00
+end_datetime: .na
+forecast_start_datetime: 2025-01-29 00:00:00
+forecast_horizon: 30
+sim_name: combined_flow
+configure_flare: configure_flare.yml
+configure_obs: observation_processing.yml
+use_s3: true

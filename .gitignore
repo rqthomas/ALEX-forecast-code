@@ -8,7 +8,7 @@ automation/*.log
 restart/*
 targets/*
 scores/*
-
+plots/*
 
 # History files
 .Rhistory

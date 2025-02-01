@@ -1,0 +1,4 @@
+state_names_obs,obs_units,obs_sd,target_variable,multi_depth
+temp,degC,0.1,temperature,1
+salt,mgL,0.015,salt,1
+depth,m,0.01,depth,0

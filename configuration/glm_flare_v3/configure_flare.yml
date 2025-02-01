@@ -1,0 +1,100 @@
+s3:
+  drivers:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/drivers/met
+  targets:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/targets
+  inflow_drivers:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/drivers/inflow
+  outflow_drivers:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/drivers/outflow
+  forecasts:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/forecasts/netcdf
+  forecasts_parquet:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/forecasts/parquet
+  restart:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/restart
+  scores:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/scores/parquet
+location:
+   site_id: ALEX
+   name: Lake Alexandrina
+   latitude: -35   #Degrees North
+   longitude: 138  #Degrees East
+da_setup:
+    da_method: enkf
+    par_fit_method: perturb
+    ensemble_size:  217
+    localization_distance: .na #distance in meters were covariances in the model error are used
+    no_negative_states: TRUE
+    assimilate_first_step: FALSE
+    use_obs_constraint: TRUE
+    obs_filename: ALEX-targets-insitu.csv
+model_settings:
+   ncore: 4
+   model_name: glm
+   base_GLM_nml: glm3.nml
+   modeled_depths: [0.0, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+   par_config_file: parameter_calibration_config.csv
+   obs_config_file: observations_config.csv
+   states_config_file: states_config.csv
+   depth_model_sd_config_file: depth_model_sd.csv
+   max_model_layers: 75
+default_init:
+   lake_depth: 6.0  #not a modeled state
+   temp: [10.20,10.20,10.20,10.20]
+   temp_depths: [1.0,3.0,4.0,6.0]
+   salinity: 0.25
+   snow_thickness: 0.0
+   white_ice_thickness: 0.0
+   blue_ice_thickness: 0.0
+flows:
+   include_inflow: TRUE
+   include_outflow: TRUE
+   future_inflow_model: future/model_id=combined_inflow/reference_date={reference_date}/site_id={site_id}   
+   historical_inflow_model: historical/model_id=historical_interp/site_id={site_id}
+   future_outflow_model: future/model_id=persistenceRW/reference_date={reference_date}/site_id={site_id}   
+   historical_outflow_model: historical/model_id=historical_interp/site_id={site_id}
+   local_outflow_directory: drivers/outflow
+   local_inflow_directory: drivers/inflow
+   use_ler_vars: FALSE
+   use_flows_s3: FALSE
+met:
+   future_met_model: gefs-v12/stage2/reference_datetime={reference_date}/site_id={site_id}
+   historical_met_model: gefs-v12/stage3/site_id={site_id} # or historical_met_model: gefs-v12/stage3
+   local_met_directory: drivers/met
+   use_ler_vars: FALSE
+   forecast_lag_days: 1
+   future_met_use_s3: TRUE
+   historical_met_use_s3: TRUE
+   use_openmeteo: FALSE
+uncertainty:
+   observation: TRUE
+   process: TRUE
+   weather: TRUE
+   initial_condition: TRUE
+   parameter: TRUE
+   met_downscale: TRUE
+   inflow_process: TRUE
+output_settings:
+   diagnostics_names: [extc]
+   evaluate_past: TRUE
+   variables_in_scores: [state, parameter]
+   generate_plot: TRUE
+   diagnostics_daily:
+     names: ['Tot Inflow Vol', 'Tot Outflow Vol',  'temp', 'salt']
+     save_names: ['inflow', 'outflow',  'outlet_temp', 'outlet_salt']
+     file: ['lake.csv', 'lake.csv', 'outlet_00.csv', 'outlet_00.csv']
+     depth: [.na, .na, .na, .na, .na, .na, .na, .na]
+
+#     names: ['Tot Inflow Vol', 'Tot Outflow Vol', 'flow', 'temp', 'salt', 'temp', 'salt']
+#     save_names: ['inflow', 'outflow', 'overflow_flow', 'overflow_temp', 'overflow_salt', 'outlet_temp', 'outlet_salt']
+#     file: ['lake.csv', 'lake.csv', 'overflow.csv', 'overflow.csv', 'overflow.csv', 'outlet_00.csv', 'outlet_00.csv']
+#     depth: [.na, .na, .na, .na, .na, .na, .na, .na]
